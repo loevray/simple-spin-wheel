@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>simple spin wheel</title>
+  <link href="./index.css" rel="stylesheet" />
+</head>
+
+<body>
+  <div id="root">
+    <main>
+      <!-- 룰렛섹션 -->
+      <section>
+        <article style="position:relative">
+          <span
+            style="position:absolute; left:50%; top:0; z-index:100; transform: translate(-50%); background-color: blue;"
+            id="arrow">ㅎㅇ</span>
+          <svg width="600px" height="600px" id="spinner" viewBox="0 0 600 600">
+            <circle r="150" cx="50%" cy="50%" stroke="tomato" fill="transparent" stroke-width="300"
+              stroke-dasharray="calc(100 * calc(2*3.14*150) / 100) calc(2*3.14*150)"
+              transform="rotate(-90) translate(-600)" />
+            <circle r="150" cx="50%" cy="50%" stroke="pink" fill="transparent" stroke-width="300"
+              stroke-dasharray="calc(66.6 * calc(2*3.14*150) / 100) calc(2*3.14*150)"
+              transform="rotate(-90) translate(-600)" />
+            <circle r="150" cx="50%" cy="50%" stroke="yellow" fill="transparent" stroke-width="300"
+              stroke-dasharray="calc(33.3 * calc(2*3.14*150) / 100) calc(2*3.14*150)"
+              transform="rotate(-90) translate(-600)" />
+          </svg>
+        </article>
+      </section>
+      <!-- 입력 섹션 -->
+      <section>
+        <input />
+      </section>
+    </main>
+    <button id="button">회전!</button>
+    <button id="button2">원들의 위치를 가져오자</button>
+  </div>
+  <script src="./index.js"></script>
+</body>
+
+</html>

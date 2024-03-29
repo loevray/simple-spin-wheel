@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "simple-spin-wheel",
+  "version": "1.0",
+  "description": "just simple spin wheel",
+  "action": {
+    "default_title": "spinner"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}
