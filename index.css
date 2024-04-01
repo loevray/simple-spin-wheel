@@ -21,8 +21,14 @@ section{
 }
 
 .rotating{
-  animation: rotating 1s linear infinite;
+  animation: rotating 2s linear infinite;
 }
+
+svg, svg>g, svg>g>text {
+  transform-origin: center;
+}
+
+
 
 @keyframes rotating {
   0% {
