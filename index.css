@@ -21,7 +21,7 @@ section{
 }
 
 .rotating{
-  animation: rotating 2s linear infinite;
+  animation: rotating 0.3s linear infinite;
 }
 
 svg, svg>g, svg>g>text {

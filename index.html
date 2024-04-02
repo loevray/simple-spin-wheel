@@ -13,15 +13,14 @@
     <main>
       <!-- 룰렛섹션 -->
       <section>
-        <article style="position:relative">
+        <figure id='container' style="position:relative">
           <span
             style="position:absolute; left:50%; top:0; z-index:10; transform: translate(-50%); background-color: blue;"
             id="arrow">ㅎㅇ</span>
-          <svg transform="rotate(-90)" width="600px" height="600px" id="spinner" viewBox="0 0 600 600">
+          <!--           <svg transform="rotate(-90)" width="600px" height="600px" id="spinner" viewBox="0 0 600 600">
             <g>
               <circle r="150" cx="50%" cy="50%" stroke="tomato" fill="transparent" stroke-width="300"
                 stroke-dasharray="calc(33.3 * calc(2*3.14*150) / 100) calc(2*3.14*150)" />
-              <!-- rotate는 360 / 현재 점유율 / 2, tranlsate는 반지름 만큼 -->
               <text transform="rotate(60) translate(150)" text-anchor="middle" x="50%" y="50%" font-size="50"
                 fill="red">가나</text>
             </g>
@@ -37,18 +36,19 @@
               <text transform="rotate(60) translate(150)" text-anchor="middle" x="50%" y="50%" font-size="50"
                 fill="red">마바</text>
             </g>
-          </svg>
-        </article>
+          </svg> -->
+        </figure>
       </section>
       <!-- 입력 섹션 -->
       <section>
         <input />
       </section>
     </main>
-    <button id="button">회전!</button>
-    <button id="button2">원들의 위치를 가져오자</button>
+    <button id="spin-button">회전!</button>
+    <button id="stop-button">회전 멈춰!</button>
+    <button id="get-sector-button">원들의 위치를 가져오자</button>
   </div>
-  <script src="./index.js"></script>
+  <script type="module" src="./index.js"></script>
 </body>
 
 </html>
