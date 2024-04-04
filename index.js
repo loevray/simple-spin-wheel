@@ -7,18 +7,15 @@ const $circles = $spinner.getElementsByTagName("circle");
 
 import EditableDiv from "./EditableDiv.js";
 import SpinWheel from "./spinWheel.js";
+import { getDeepCopy } from "./utils/getDeepCopy.js";
 
 /* spin wheel section */
 
 const $container = document.getElementById("container");
 
-const sectorData = [
-  { id: "1", ratio: 1, sectorColor: "tomato", text: "가나" },
-  { id: "2", ratio: 1, sectorColor: "pink", text: "다라" },
-  { id: "3", ratio: 1, sectorColor: "blue", text: "마바" },
-  { id: "4", ratio: 1, sectorColor: "green", text: "사아" },
-  { id: "5", ratio: 1, sectorColor: "gray", text: "자차" },
-  { id: "6", ratio: 3, sectorColor: "yellow", text: "카타" },
+let sectorData = [
+  { id: "1", ratio: 1, sectorColor: "tomato", text: "돌림판" },
+  { id: "2", ratio: 1, sectorColor: "pink", text: "입니다" },
 ];
 
 const spineWheel = new SpinWheel({
@@ -57,13 +54,13 @@ const initializeEditableDiv = () => {
   new EditableDiv({
     id: "text1",
     container: $inputContainer,
-    text: "이건 기본 입력창1",
+    text: "돌림판",
   });
 
   new EditableDiv({
     id: "text2",
     container: $inputContainer,
-    text: "이건 기본입력창2",
+    text: "입니다",
   });
 };
 
@@ -76,14 +73,12 @@ const onKeyEnter = (e, container) => {
     return e.target.nextElementSibling.focus();
   }
 
-  const { id: currentId } = e.target;
-  const newId = `text${+currentId.split("text")[1] + 1}`;
-
   const nextDiv = new EditableDiv({
-    id: `${newId}`,
+    id: "",
     container,
     text: "추가된 입력창",
   });
+
   nextDiv.element.focus();
 };
 
@@ -97,11 +92,21 @@ const onArrowDown = (e) => {
   e.target.nextElementSibling.focus();
 };
 
+const getCurrentNodeArray = (target) => [...target.parentNode.childNodes];
+
 const onBackSpace = (e, container) => {
-  if (e.target.textContent.length || e.target.id.split("text")[1] <= 2) return;
-  const currentDivEl = document.getElementById(e.target.id);
+  const currentNodeArr = getCurrentNodeArray(e.target).slice(1);
+  const currentIndex = currentNodeArr.indexOf(e.target);
+  if (e.target.textContent.length || currentIndex <= 1) return;
+
+  const currentDivEl = e.target;
   const prevEl = currentDivEl.previousElementSibling;
+
   container.removeChild(currentDivEl);
+
+  const newSectorData = getDeepCopy(sectorData).slice(0, currentIndex);
+  sectorData = getDeepCopy(newSectorData);
+  spineWheel.update({ sectorData: newSectorData });
   prevEl && prevEl.focus();
 };
 
@@ -116,20 +121,32 @@ $inputContainer.addEventListener("keydown", (e) => {
     Backspace: (e) => onBackSpace(e, $inputContainer),
   };
 
-  keyFns?.[e.key](e);
+  keyFns?.[e.key]?.(e);
 });
 
 $inputContainer.addEventListener("input", (e) => {
   const { dataset } = e.target;
   if (!dataset) return;
+  const currentNodeArr = getCurrentNodeArray(e.target).slice(1);
+  const currentIndex = currentNodeArr.indexOf(e.target);
+  const newSectorData = getDeepCopy(sectorData);
 
-  /* spineWheel.update({ sectorData: [...sectorData] }); */
+  console.log(newSectorData);
+  if (newSectorData.length > currentIndex) {
+    newSectorData[currentIndex] = {
+      ...newSectorData[currentIndex],
+      text: e.target.textContent,
+    };
+  } else {
+    newSectorData.push({
+      id: "",
+      ratio: 1,
+      sectorColor: "gray",
+      text: e.target.textContent,
+    });
+  }
+
+  sectorData = getDeepCopy(newSectorData);
+
+  spineWheel.update({ sectorData: newSectorData });
 });
-/* 
-
-1. contenteditable div다
-2. 2개는 기본값으로 존재한다
-3. 엔터키를 누를시 만약 아래 형제노드가 없다면, 새로운 div를 생성한다.
-  a. 형제가 있다면, 그 형제로 focus
-4. div에 이벤트를 걸어서 내부 텍스트가 바뀔때 마다 spinWheel update메서드를 호출한다.
-*/
