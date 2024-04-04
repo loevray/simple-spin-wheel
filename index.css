@@ -12,12 +12,15 @@ main{
   display: flex;
 }
 
-section{
+.left-section{
   width: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 100px;
+}
+
+.right-section{
+  padding: 80px 0 80px 0;
 }
 
 .rotating{
@@ -26,6 +29,25 @@ section{
 
 svg, svg>g, svg>g>text {
   transform-origin: center;
+}
+
+[data-contenteditable]{
+ display: flex;  
+ align-items: center;
+ padding: 1px;
+}
+
+.inputs {
+  height: 600px;
+  width: 350px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-y: auto;
+}
+
+.inputs > div{
+  flex-shrink: 0;
 }
 
 

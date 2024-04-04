@@ -23,14 +23,18 @@ export default class SpinWheel {
   constructor({ size, radius, sectorData, container }) {
     this.size = size;
     this.radius = radius;
-    this.sectorData = sectorData;
-    this.totalSector = sectorData.length;
-    this.container = container;
     this.circumference = 2 * Math.PI * this.radius;
+    this.container = container;
+
+    this.sectorData = sectorData;
+    this.totalSector = sectorData.reduce((acc, cur) => cur.ratio + acc, 0);
     this.sectorGroup = [];
     this.draw();
   }
 
+  /**
+   * Renders the spinning wheel.
+   */
   draw() {
     this.svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 
@@ -47,10 +51,11 @@ export default class SpinWheel {
   }
 
   drawSector() {
+    let accRatio = 0;
     this.sectorData.forEach(
-      ({ id, ratio, sectorColor, text, fontColor, fontSize }, index) => {
-        const sectorRatio = ratio / this.sectorData.length;
-        const sectorPercent = Number((sectorRatio * 100).toFixed(1));
+      ({ id, ratio, sectorColor, text, fontColor, fontSize }) => {
+        const sectorRatio = ratio / this.totalSector;
+        const sectorPercent = sectorRatio * 100;
 
         const groupEl = document.createElementNS(
           "http://www.w3.org/2000/svg",
@@ -59,8 +64,10 @@ export default class SpinWheel {
 
         groupEl.setAttribute(
           "transform",
-          `rotate(-${360 * sectorRatio * index})`
+          `rotate(${(360 / this.totalSector) * accRatio})`
         );
+
+        accRatio += ratio;
 
         const circleEl = document.createElementNS(
           "http://www.w3.org/2000/svg",
@@ -83,14 +90,14 @@ export default class SpinWheel {
           "text"
         );
 
-        textEl.textContent = text;
-
         setAttributes(textEl, {
           ...DEFAULT_TEXT_ATTR,
           transform: `rotate(${((360 * sectorRatio) / 2).toFixed(
             1
-          )}) translate(${this.radius})`,
+          )}) translate(${this.radius} 10)`,
         });
+
+        textEl.textContent = text;
 
         groupEl.append(circleEl, textEl);
 
@@ -101,7 +108,10 @@ export default class SpinWheel {
     this.svgEl.append(...this.sectorGroup);
   }
 
-  update() {
+  update({ sectorData = this.sectorData }) {
+    this.sectorData = sectorData;
+    this.totalSector = sectorData.reduce((acc, cur) => cur.ratio + acc, 0);
+    this.sectorGroup = [];
     this.remove();
     this.draw();
   }
