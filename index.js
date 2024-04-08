@@ -152,7 +152,8 @@ new Button({
   onClick: () =>
     console.log(
       document
-        .elementsFromPoint(targetX, targetY + 10)[1]
+        .elementsFromPoint(targetX, targetY + 10)
+        .find((node) => node.nodeName === "circle")
         .getAttribute("stroke")
     ),
   container: $buttonContainer,
