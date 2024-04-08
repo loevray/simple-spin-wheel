@@ -1,5 +1,6 @@
 import EditableDiv from "./components/EditableDiv.js";
 import SpinWheel from "./components/SpinWheel.js";
+import Button from "./components/Button.js";
 import { getDeepCopy } from "./utils/getDeepCopy.js";
 
 /* spin wheel section */
@@ -16,27 +17,6 @@ const spineWheel = new SpinWheel({
   radius: 150,
   sectorData,
   container: $spinWheelContainer,
-});
-
-const $spinButton = document.getElementById("spin-button");
-const $stopButton = document.getElementById("stop-button");
-
-$spinButton.addEventListener("click", () => {
-  spineWheel.rotate();
-});
-$stopButton.addEventListener("click", () => {
-  spineWheel.stopRotate();
-});
-
-const $arrow = document.getElementById("arrow");
-const $getSectorButton = document.getElementById("get-sector-button");
-
-const { x: targetX, y: targetY } = $arrow.getBoundingClientRect();
-
-$getSectorButton.addEventListener("click", () => {
-  console.log(
-    document.elementsFromPoint(targetX, targetY + 10)[1].getAttribute("stroke")
-  );
 });
 
 /* input section */
@@ -143,4 +123,38 @@ $inputContainer.addEventListener("input", (e) => {
   sectorData = getDeepCopy(newSectorData);
 
   spineWheel.update({ sectorData: newSectorData });
+});
+
+/* button section */
+
+const $buttonContainer = document.getElementById("button-container");
+
+new Button({
+  id: "rotate-spin-wheel",
+  onClick: spineWheel.rotate.bind(spineWheel),
+  container: $buttonContainer,
+  text: "회전!",
+});
+
+new Button({
+  id: "stop-spin-wheel",
+  onClick: spineWheel.stopRotate.bind(spineWheel),
+  container: $buttonContainer,
+  text: "회전 멈춰!",
+});
+
+const $arrow = document.getElementById("arrow");
+
+const { x: targetX, y: targetY } = $arrow.getBoundingClientRect();
+
+new Button({
+  id: "get-sector",
+  onClick: () =>
+    console.log(
+      document
+        .elementsFromPoint(targetX, targetY + 10)[1]
+        .getAttribute("stroke")
+    ),
+  container: $buttonContainer,
+  text: "원들의 위치를 가져오자",
 });
