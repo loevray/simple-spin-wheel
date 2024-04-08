@@ -1,9 +1,9 @@
-import setAttributes from "./utils/setAttributes.js";
+import setAttributes from "../utils/setAttributes.js";
 import {
   DEFAULT_CIRCLE_ATTR,
   DEFAULT_TEXT_ATTR,
   DEFAULT_SVG_ATTR,
-} from "./constants/DEFAULT_ATTR.js";
+} from "../constants/DEFAULT_ATTR.js";
 
 export default class SpinWheel {
   /**

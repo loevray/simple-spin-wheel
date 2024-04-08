@@ -1,5 +1,5 @@
-import { DEFAULT_EDITABLE_STYLE } from "./constants/DEFAULT_ATTR.js";
-import setAttributes from "./utils/setAttributes.js";
+import { DEFAULT_EDITABLE_STYLE } from "../constants/DEFAULT_ATTR.js";
+import setAttributes from "../utils/setAttributes.js";
 
 export default class EditableDiv {
   /**

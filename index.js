@@ -1,17 +1,10 @@
-/* 
-const $spinner = document.getElementById("spinner");
-const $circles = $spinner.getElementsByTagName("circle");
-
-
- */
-
-import EditableDiv from "./EditableDiv.js";
-import SpinWheel from "./spinWheel.js";
+import EditableDiv from "./components/EditableDiv.js";
+import SpinWheel from "./components/SpinWheel.js";
 import { getDeepCopy } from "./utils/getDeepCopy.js";
 
 /* spin wheel section */
 
-const $container = document.getElementById("container");
+const $spinWheelContainer = document.getElementById("spin-wheel-container");
 
 let sectorData = [
   { ratio: 1, sectorColor: "tomato", text: "돌림판" },
@@ -22,7 +15,7 @@ const spineWheel = new SpinWheel({
   size: 600,
   radius: 150,
   sectorData,
-  container: $container,
+  container: $spinWheelContainer,
 });
 
 const $spinButton = document.getElementById("spin-button");
