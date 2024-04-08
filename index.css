@@ -24,8 +24,15 @@ main{
 }
 
 .rotating{
-  animation: rotating 0.3s linear infinite;
+  animation: rotating 0.25s linear infinite forwards;
 }
+
+.paused {
+  transition: 5s ease-out;
+  animation-play-state: paused; /* 애니메이션 일시정지 */
+  transform:rotate(10turn) /* transition의 delay의 2배가 되어야 매끄럽다 */
+}
+
 
 svg, svg>g, svg>g>text {
   transform-origin: center;
@@ -53,10 +60,6 @@ svg, svg>g, svg>g>text {
 
 
 @keyframes rotating {
-  0% {
-      transform: rotate(0deg);
-  }
-  100% {
-      transform: rotate(360deg);
-  }
+  to{rotate:1turn}
 }
+
