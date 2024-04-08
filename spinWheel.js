@@ -47,10 +47,10 @@ export default class SpinWheel {
 
     this.container.appendChild(this.svgEl);
 
-    this.drawSector();
+    this.#drawSector();
   }
 
-  drawSector() {
+  #drawSector() {
     let accRatio = 0;
     this.sectorData.forEach(
       ({ id, ratio, sectorColor, text, fontColor, fontSize }) => {
@@ -112,12 +112,12 @@ export default class SpinWheel {
     this.sectorData = sectorData;
     this.totalSector = sectorData.reduce((acc, cur) => cur.ratio + acc, 0);
     this.sectorGroup = [];
-    this.remove();
+    this.#remove();
     this.draw();
   }
 
-  remove() {
-    this.container.innerHTML = "";
+  #remove() {
+    this.container.removeChild(this.svgEl);
   }
 
   rotate() {

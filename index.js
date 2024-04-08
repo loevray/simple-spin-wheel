@@ -14,8 +14,8 @@ import { getDeepCopy } from "./utils/getDeepCopy.js";
 const $container = document.getElementById("container");
 
 let sectorData = [
-  { id: "1", ratio: 1, sectorColor: "tomato", text: "돌림판" },
-  { id: "2", ratio: 1, sectorColor: "pink", text: "입니다" },
+  { ratio: 1, sectorColor: "tomato", text: "돌림판" },
+  { ratio: 1, sectorColor: "pink", text: "입니다" },
 ];
 
 const spineWheel = new SpinWheel({
@@ -92,10 +92,10 @@ const onArrowDown = (e) => {
   e.target.nextElementSibling.focus();
 };
 
-const getCurrentNodeArray = (target) => [...target.parentNode.childNodes];
+const getChildNodesArr = (target) => [...target.childNodes];
 
 const onBackSpace = (e, container) => {
-  const currentNodeArr = getCurrentNodeArray(e.target).slice(1);
+  const currentNodeArr = getChildNodesArr(e.currentTarget).slice(1);
   const currentIndex = currentNodeArr.indexOf(e.target);
   if (e.target.textContent.length || currentIndex <= 1) return;
 
@@ -127,7 +127,8 @@ $inputContainer.addEventListener("keydown", (e) => {
 $inputContainer.addEventListener("input", (e) => {
   const { dataset } = e.target;
   if (!dataset) return;
-  const currentNodeArr = getCurrentNodeArray(e.target).slice(1);
+  console.log(e.currentTarget.childNodes);
+  const currentNodeArr = getChildNodesArr(e.currentTarget).slice(1);
   const currentIndex = currentNodeArr.indexOf(e.target);
   const newSectorData = getDeepCopy(sectorData);
 
