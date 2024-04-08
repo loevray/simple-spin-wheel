@@ -12,11 +12,22 @@ let sectorData = [
   { ratio: 1, sectorColor: "pink", text: "입니다" },
 ];
 
+const getWinningText = () => {
+  const $arrow = document.getElementById("arrow");
+  const { x: targetX, y: targetY } = $arrow.getBoundingClientRect();
+  const winningText = document
+    .elementsFromPoint(targetX, targetY + 10)
+    .find((node) => node.nodeName === "circle").nextElementSibling.textContent;
+
+  console.log(winningText);
+};
+
 const spineWheel = new SpinWheel({
   size: 600,
   radius: 150,
   sectorData,
   container: $spinWheelContainer,
+  onStopRotate: getWinningText,
 });
 
 /* input section */
@@ -100,12 +111,10 @@ $inputContainer.addEventListener("keydown", (e) => {
 $inputContainer.addEventListener("input", (e) => {
   const { dataset } = e.target;
   if (!dataset) return;
-  console.log(e.currentTarget.childNodes);
   const currentNodeArr = getChildNodesArr(e.currentTarget).slice(1);
   const currentIndex = currentNodeArr.indexOf(e.target);
   const newSectorData = getDeepCopy(sectorData);
 
-  console.log(newSectorData);
   if (newSectorData.length > currentIndex) {
     newSectorData[currentIndex] = {
       ...newSectorData[currentIndex],
@@ -143,19 +152,9 @@ new Button({
   text: "회전 멈춰!",
 });
 
-const $arrow = document.getElementById("arrow");
-
-const { x: targetX, y: targetY } = $arrow.getBoundingClientRect();
-
 new Button({
   id: "get-sector",
-  onClick: () =>
-    console.log(
-      document
-        .elementsFromPoint(targetX, targetY + 10)
-        .find((node) => node.nodeName === "circle")
-        .getAttribute("stroke")
-    ),
+  onClick: getWinningText,
   container: $buttonContainer,
   text: "원들의 위치를 가져오자",
 });
