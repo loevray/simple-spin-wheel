@@ -20,12 +20,20 @@ export default class SpinWheel {
    * @param {HTMLElement} props.container - SpinWheel Conatiner
    * @param {HTMLOrSVGElement} svgEL
    */
-  constructor({ size, radius, sectorData, container, onStopRotate }) {
+  constructor({
+    size,
+    radius,
+    sectorData,
+    container,
+    onStopRotate,
+    onStartRotate,
+  }) {
     this.size = size;
     this.radius = radius;
     this.circumference = 2 * Math.PI * this.radius;
     this.container = container;
     this.onStopRotate = onStopRotate;
+    this.onStartRotate = onStartRotate;
     this.sectorData = sectorData;
     this.totalSector = sectorData.reduce((acc, cur) => cur.ratio + acc, 0);
     this.sectorGroup = [];
@@ -134,6 +142,11 @@ export default class SpinWheel {
   addEvent() {
     this.svgEl.addEventListener("transitionend", (e) => {
       this.onStopRotate(e);
+    });
+
+    this.svgEl.addEventListener("animationstart", (e) => {
+      this.onStartRotate(e);
+      console.log("animation start");
     });
   }
 }

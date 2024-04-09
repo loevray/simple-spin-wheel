@@ -2,6 +2,7 @@ import EditableDiv from "./components/EditableDiv.js";
 import SpinWheel from "./components/SpinWheel.js";
 import Button from "./components/Button.js";
 import { getDeepCopy } from "./utils/getDeepCopy.js";
+import Text from "./components/Text.js";
 
 /* spin wheel section */
 
@@ -18,8 +19,27 @@ const getWinningText = () => {
   const winningText = document
     .elementsFromPoint(targetX, targetY + 10)
     .find((node) => node.nodeName === "circle").nextElementSibling.textContent;
-
   console.log(winningText);
+
+  return winningText;
+};
+
+/* Winning Text section */
+const $leftSection = document.getElementsByClassName("left-section")[0];
+
+const textComponent = new Text({
+  id: "winning-text",
+  text: "돌려돌려 돌림판!",
+  container: $leftSection,
+});
+
+let intervalId = null;
+
+const updateText = () => {
+  intervalId = setInterval(
+    () => textComponent.update({ newText: getWinningText() }),
+    100
+  );
 };
 
 const spineWheel = new SpinWheel({
@@ -27,7 +47,11 @@ const spineWheel = new SpinWheel({
   radius: 150,
   sectorData,
   container: $spinWheelContainer,
-  onStopRotate: getWinningText,
+  onStopRotate: () => {
+    getWinningText();
+    if (intervalId) clearInterval(intervalId);
+  },
+  onStartRotate: updateText,
 });
 
 /* input section */
