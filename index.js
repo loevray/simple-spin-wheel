@@ -3,6 +3,7 @@ import SpinWheel from "./components/SpinWheel.js";
 import Button from "./components/Button.js";
 import { getDeepCopy } from "./utils/getDeepCopy.js";
 import Text from "./components/Text.js";
+import Div from "./components/Div.js";
 
 /* spin wheel section */
 
@@ -19,7 +20,6 @@ const getWinningText = () => {
   const winningText = document
     .elementsFromPoint(targetX, targetY + 10)
     .find((node) => node.nodeName === "circle").nextElementSibling.textContent;
-  console.log(winningText);
 
   return winningText;
 };
@@ -36,10 +36,7 @@ const textComponent = new Text({
 let intervalId = null;
 
 const updateText = () => {
-  intervalId = setInterval(
-    () => textComponent.update({ newText: getWinningText() }),
-    100
-  );
+  intervalId = setInterval(() => textComponent.update(getWinningText()), 100);
 };
 
 const spineWheel = new SpinWheel({
@@ -58,36 +55,182 @@ const spineWheel = new SpinWheel({
 
 const $inputContainer = document.getElementById("input-container");
 
-const initializeEditableDiv = () => {
-  new EditableDiv({
-    id: "text1",
-    container: $inputContainer,
-    text: "돌림판",
-  });
+const handleButtonClick = (e, add = true) => {
+  const editableDivWrapper = e.target.closest("[data-id=editable-div-wrapper]");
+  const editableDivNodes = getChildNodesArr(
+    editableDivWrapper.parentNode
+  ).slice(1);
+  const currentEditableDivIndex = editableDivNodes.indexOf(editableDivWrapper);
+  if (currentEditableDivIndex === -1) {
+    return console.error(
+      "버튼클릭후, 해당하는 editable div를 찾지 못했습니다."
+    );
+  }
+  const newSectorData = getDeepCopy(sectorData);
+  const currentRatio = newSectorData[currentEditableDivIndex].ratio;
+  newSectorData[currentEditableDivIndex].ratio = add
+    ? currentRatio + 1
+    : currentRatio > 1
+    ? currentRatio - 1
+    : currentRatio;
 
-  new EditableDiv({
-    id: "text2",
-    container: $inputContainer,
-    text: "입니다",
+  sectorData = getDeepCopy(newSectorData);
+
+  spineWheel.update({ sectorData: newSectorData });
+};
+
+const initializeEditableDiv = () => {
+  const initialData = [
+    {
+      textId: "text1",
+      text: "돌림판",
+    },
+    {
+      textId: "text2",
+      text: "입니다",
+    },
+  ];
+
+  initialData.forEach(({ textId, text }) => {
+    const container = new Div({
+      container: $inputContainer,
+      style: {
+        display: "flex",
+      },
+      dataSet: "editable-div-wrapper",
+    }).element;
+
+    new EditableDiv({
+      id: textId,
+      container,
+      text,
+    });
+
+    const ratioText = new Text({
+      container,
+      text: "1",
+      prepend: false,
+      style: {
+        display: "flex",
+        alignItems: "center",
+        padding: "0 5px 0 5px",
+      },
+    });
+
+    const buttonContainer = new Div({
+      container,
+      style: {
+        display: "flex",
+        flexDirection: "column",
+      },
+    }).element;
+
+    new Button({
+      id: `btn${(Math.random() * 1000000000).toFixed(0)}`,
+      onClick: (e) => {
+        handleButtonClick(e);
+        ratioText.update((prevText) => +prevText + 1);
+      },
+      container: buttonContainer,
+      text: "+",
+    });
+
+    new Button({
+      id: `btn${(Math.random() * 1000000000).toFixed(0)}`,
+      onClick: (e) => {
+        handleButtonClick(e, false);
+        ratioText.update((prevText) => {
+          if (+prevText > 1) return +prevText - 1;
+          return prevText;
+        });
+      },
+      container: buttonContainer,
+      text: "-",
+    });
   });
 };
 
 initializeEditableDiv();
 
-const onKeyEnter = (e, container) => {
+const onKeyEnter = (e, _container) => {
   e.preventDefault();
   if (!e.target.textContent.length) return;
-  if (e.target.nextElementSibling) {
-    return e.target.nextElementSibling.focus();
+
+  const currentNode = e.target.parentNode;
+
+  if (currentNode.nextElementSibling) {
+    return currentNode.nextElementSibling.focus();
   }
 
+  const container = new Div({
+    container: _container,
+    style: {
+      display: "flex",
+    },
+    dataSet: "editable-div-wrapper",
+  }).element;
+
   const nextDiv = new EditableDiv({
-    id: "",
     container,
-    text: "추가된 입력창",
+    text: "",
+  });
+
+  const ratioText = new Text({
+    container,
+    text: "1",
+    prepend: false,
+    style: {
+      display: "flex",
+      alignItems: "center",
+      padding: "0 5px 0 5px",
+    },
+  });
+
+  const buttonContainer = new Div({
+    container,
+    style: {
+      display: "flex",
+      flexDirection: "column",
+    },
+  }).element;
+
+  new Button({
+    id: `btn${(Math.random() * 1000000000).toFixed(0)}`,
+    onClick: (e) => {
+      handleButtonClick(e);
+      ratioText.update((prevText) => +prevText + 1);
+    },
+    container: buttonContainer,
+    text: "+",
+  });
+
+  new Button({
+    id: `btn${(Math.random() * 1000000000).toFixed(0)}`,
+    onClick: (e) => {
+      handleButtonClick(e, false);
+      ratioText.update((prevText) => {
+        if (+prevText > 1) return +prevText - 1;
+        return prevText;
+      });
+    },
+    container: buttonContainer,
+    text: "-",
   });
 
   nextDiv.element.focus();
+
+  const newSectorData = getDeepCopy(sectorData);
+
+  newSectorData.push({
+    id: "",
+    ratio: 1,
+    sectorColor: "gray",
+    text: "",
+  });
+
+  sectorData = getDeepCopy(newSectorData);
+
+  spineWheel.update({ sectorData: newSectorData });
 };
 
 const onArrowUp = (e) => {
@@ -104,10 +247,10 @@ const getChildNodesArr = (target) => [...target.childNodes];
 
 const onBackSpace = (e, container) => {
   const currentNodeArr = getChildNodesArr(e.currentTarget).slice(1);
-  const currentIndex = currentNodeArr.indexOf(e.target);
+  const currentDivEl = e.target.parentNode;
+  const currentIndex = currentNodeArr.indexOf(currentDivEl);
   if (e.target.textContent.length || currentIndex <= 1) return;
 
-  const currentDivEl = e.target;
   const prevEl = currentDivEl.previousElementSibling;
 
   container.removeChild(currentDivEl);
@@ -115,13 +258,12 @@ const onBackSpace = (e, container) => {
   const newSectorData = getDeepCopy(sectorData).slice(0, currentIndex);
   sectorData = getDeepCopy(newSectorData);
   spineWheel.update({ sectorData: newSectorData });
-  prevEl && prevEl.focus();
+  prevEl && prevEl.firstChild.focus();
 };
 
 $inputContainer.addEventListener("keydown", (e) => {
   const { dataset } = e.target;
   if (!dataset) return;
-
   const keyFns = {
     Enter: (e) => onKeyEnter(e, $inputContainer),
     ArrowUp: (e) => onArrowUp(e),
@@ -135,23 +277,15 @@ $inputContainer.addEventListener("keydown", (e) => {
 $inputContainer.addEventListener("input", (e) => {
   const { dataset } = e.target;
   if (!dataset) return;
+
   const currentNodeArr = getChildNodesArr(e.currentTarget).slice(1);
-  const currentIndex = currentNodeArr.indexOf(e.target);
+  const currentIndex = currentNodeArr.indexOf(e.target.parentNode);
   const newSectorData = getDeepCopy(sectorData);
 
-  if (newSectorData.length > currentIndex) {
-    newSectorData[currentIndex] = {
-      ...newSectorData[currentIndex],
-      text: e.target.textContent,
-    };
-  } else {
-    newSectorData.push({
-      id: "",
-      ratio: 1,
-      sectorColor: "gray",
-      text: e.target.textContent,
-    });
-  }
+  newSectorData[currentIndex] = {
+    ...newSectorData[currentIndex],
+    text: e.target.textContent,
+  };
 
   sectorData = getDeepCopy(newSectorData);
 
