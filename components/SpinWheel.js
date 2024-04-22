@@ -138,13 +138,10 @@ export default class SpinWheel {
 
   stopRotate() {
     this.svgEl.classList.add("paused");
+    this.onStopRotate?.();
   }
 
   addEvent() {
-    this.svgEl.addEventListener("transitionend", (e) => {
-      this.onStopRotate?.(e);
-    });
-
     this.svgEl.addEventListener("animationstart", (e) => {
       this.onStartRotate?.(e);
       console.log("animation start");

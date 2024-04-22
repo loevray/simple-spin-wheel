@@ -33,19 +33,23 @@ const textComponent = new Text({
   container: $leftSection,
 });
 
-let intervalId = null;
+let myReq = null;
 
-const updateText = () => {
-  intervalId = setInterval(() => textComponent.update(getWinningText()), 100);
+const stopReq = () => {
+  cancelAnimationFrame(myReq);
 };
 
-const DEFAULT_SPIN_WHEEL_SIZE = 560;
+const DEFAULT_SPIN_WHEEL_SIZE = 560; //4의 배수여야함
 const DEFAULT_SPIN_WHEEL_R = DEFAULT_SPIN_WHEEL_SIZE / 4;
 const spineWheel = new SpinWheel({
   size: DEFAULT_SPIN_WHEEL_SIZE,
   radius: DEFAULT_SPIN_WHEEL_R,
   sectorData,
   container: $spinWheelContainer,
+  onStartRotate: () => {
+    myReq = monitorRotationAngle();
+  },
+  onStopRotate: stopReq,
 });
 
 /* input section */
@@ -308,6 +312,7 @@ new Button({
 });
 
 function monitorRotationAngle() {
+  // -90~ 270
   const svgContainer = document.getElementById("svg-container");
   const rotationMatrix = window
     .getComputedStyle(svgContainer)
@@ -320,11 +325,11 @@ function monitorRotationAngle() {
     // 회전 각도 계산
     const rotationAngle = Math.atan2(matrix[1], matrix[0]) * (180 / Math.PI);
     console.log("회전 각도: " + rotationAngle.toFixed(2) + "도");
+    textComponent.update(getWinningText());
   }
 
   // 애니메이션 프레임마다 회전 각도 모니터링
-  requestAnimationFrame(monitorRotationAngle);
+  myReq = requestAnimationFrame(monitorRotationAngle);
 }
 
 // 페이지 로드 시 회전 각도 모니터링 시작
-monitorRotationAngle();
