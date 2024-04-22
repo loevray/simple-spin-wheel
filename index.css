@@ -26,6 +26,11 @@ main{
 
 .right-section{
   padding: 80px 0 80px 0;
+  width: 50%;
+}
+
+.right-section > article{
+  width: 500px;
 }
 
 .rotating{

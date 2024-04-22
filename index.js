@@ -31,6 +31,9 @@ const textComponent = new Text({
   id: "winning-text",
   text: "돌려돌려 돌림판!",
   container: $leftSection,
+  style: {
+    ["font-size"]: "24px",
+  },
 });
 
 let myReq = null;
@@ -41,16 +44,38 @@ const stopReq = () => {
 
 const DEFAULT_SPIN_WHEEL_SIZE = 560; //4의 배수여야함
 const DEFAULT_SPIN_WHEEL_R = DEFAULT_SPIN_WHEEL_SIZE / 4;
+
 const spineWheel = new SpinWheel({
   size: DEFAULT_SPIN_WHEEL_SIZE,
   radius: DEFAULT_SPIN_WHEEL_R,
   sectorData,
   container: $spinWheelContainer,
   onStartRotate: () => {
-    myReq = monitorRotationAngle();
+    myReq = onRotating();
   },
   onStopRotate: stopReq,
 });
+
+const onRotating = () => {
+  /*  // -90~ 270
+  const svgContainer = document.getElementById("svg-container");
+  const rotationMatrix = window
+    .getComputedStyle(svgContainer)
+    .getPropertyValue("transform");
+
+  // 회전 변환 행렬 추출
+  let matrix = rotationMatrix.match(/^matrix\(([^\)]+)\)$/);
+  if (matrix) {
+    matrix = matrix[1].split(",").map(parseFloat);
+    // 회전 각도 계산
+    const rotationAngle = Math.atan2(matrix[1], matrix[0]) * (180 / Math.PI);
+    console.log("회전 각도: " + rotationAngle.toFixed(2) + "도");
+  } */
+  textComponent.update(getWinningText());
+
+  // 애니메이션 프레임마다 회전 각도 모니터링
+  myReq = requestAnimationFrame(onRotating);
+};
 
 /* input section */
 
@@ -97,6 +122,8 @@ const initializeEditableDiv = () => {
       container: $inputContainer,
       style: {
         display: "flex",
+        width: "400px",
+        ["justify-content"]: "end",
       },
       dataSet: "editable-div-wrapper",
     }).element;
@@ -167,9 +194,32 @@ const onKeyEnter = (e, _container) => {
     container: _container,
     style: {
       display: "flex",
+      width: "400px",
+      ["justify-content"]: "end",
     },
     dataSet: "editable-div-wrapper",
   }).element;
+
+  new Button({
+    id: `btn${(Math.random() * 1000000000).toFixed(0)}`,
+    onClick: (e) => {
+      const currentNodeArr = getChildNodesArr($inputContainer).slice(1);
+      const currentDivEl = e.target.parentNode;
+      const currentIndex = currentNodeArr.indexOf(currentDivEl);
+      if (currentIndex <= 1) return;
+
+      const prevEl = currentDivEl.previousElementSibling;
+
+      $inputContainer.removeChild(currentDivEl);
+
+      const newSectorData = getDeepCopy(sectorData).slice(0, currentIndex);
+      sectorData = getDeepCopy(newSectorData);
+      spineWheel.update({ sectorData: newSectorData });
+      prevEl && prevEl.firstChild.focus();
+    },
+    container,
+    text: "X",
+  });
 
   const nextDiv = new EditableDiv({
     container,
@@ -310,26 +360,3 @@ new Button({
   container: $buttonContainer,
   text: "회전 멈춰!",
 });
-
-function monitorRotationAngle() {
-  // -90~ 270
-  const svgContainer = document.getElementById("svg-container");
-  const rotationMatrix = window
-    .getComputedStyle(svgContainer)
-    .getPropertyValue("transform");
-
-  // 회전 변환 행렬 추출
-  let matrix = rotationMatrix.match(/^matrix\(([^\)]+)\)$/);
-  if (matrix) {
-    matrix = matrix[1].split(",").map(parseFloat);
-    // 회전 각도 계산
-    const rotationAngle = Math.atan2(matrix[1], matrix[0]) * (180 / Math.PI);
-    console.log("회전 각도: " + rotationAngle.toFixed(2) + "도");
-    textComponent.update(getWinningText());
-  }
-
-  // 애니메이션 프레임마다 회전 각도 모니터링
-  myReq = requestAnimationFrame(monitorRotationAngle);
-}
-
-// 페이지 로드 시 회전 각도 모니터링 시작
