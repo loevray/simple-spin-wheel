@@ -134,6 +134,7 @@ export default class SpinWheel {
   rotate() {
     this.svgEl.classList.remove("paused");
     this.svgEl.classList.add("rotating");
+    this.onStartRotate?.();
   }
 
   stopRotate() {
@@ -141,10 +142,5 @@ export default class SpinWheel {
     this.onStopRotate?.();
   }
 
-  addEvent() {
-    this.svgEl.addEventListener("animationstart", (e) => {
-      this.onStartRotate?.(e);
-      console.log("animation start");
-    });
-  }
+  addEvent() {}
 }
