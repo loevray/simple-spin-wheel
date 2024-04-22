@@ -52,6 +52,7 @@ export default class SpinWheel {
       viewBox: `0 0 ${this.size} ${this.size}`,
       width: `${this.size}px`,
       height: `${this.size}px`,
+      id: "svg-container",
     });
 
     this.container.appendChild(this.svgEl);
@@ -141,11 +142,11 @@ export default class SpinWheel {
 
   addEvent() {
     this.svgEl.addEventListener("transitionend", (e) => {
-      this.onStopRotate(e);
+      this.onStopRotate?.(e);
     });
 
     this.svgEl.addEventListener("animationstart", (e) => {
-      this.onStartRotate(e);
+      this.onStartRotate?.(e);
       console.log("animation start");
     });
   }

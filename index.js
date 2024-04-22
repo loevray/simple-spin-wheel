@@ -39,16 +39,13 @@ const updateText = () => {
   intervalId = setInterval(() => textComponent.update(getWinningText()), 100);
 };
 
+const DEFAULT_SPIN_WHEEL_SIZE = 560;
+const DEFAULT_SPIN_WHEEL_R = DEFAULT_SPIN_WHEEL_SIZE / 4;
 const spineWheel = new SpinWheel({
-  size: 600,
-  radius: 150,
+  size: DEFAULT_SPIN_WHEEL_SIZE,
+  radius: DEFAULT_SPIN_WHEEL_R,
   sectorData,
   container: $spinWheelContainer,
-  onStopRotate: () => {
-    getWinningText();
-    if (intervalId) clearInterval(intervalId);
-  },
-  onStartRotate: updateText,
 });
 
 /* input section */
@@ -310,9 +307,24 @@ new Button({
   text: "회전 멈춰!",
 });
 
-new Button({
-  id: "get-sector",
-  onClick: getWinningText,
-  container: $buttonContainer,
-  text: "원들의 위치를 가져오자",
-});
+function monitorRotationAngle() {
+  const svgContainer = document.getElementById("svg-container");
+  const rotationMatrix = window
+    .getComputedStyle(svgContainer)
+    .getPropertyValue("transform");
+
+  // 회전 변환 행렬 추출
+  let matrix = rotationMatrix.match(/^matrix\(([^\)]+)\)$/);
+  if (matrix) {
+    matrix = matrix[1].split(",").map(parseFloat);
+    // 회전 각도 계산
+    const rotationAngle = Math.atan2(matrix[1], matrix[0]) * (180 / Math.PI);
+    console.log("회전 각도: " + rotationAngle.toFixed(2) + "도");
+  }
+
+  // 애니메이션 프레임마다 회전 각도 모니터링
+  requestAnimationFrame(monitorRotationAngle);
+}
+
+// 페이지 로드 시 회전 각도 모니터링 시작
+monitorRotationAngle();
